@@ -16,10 +16,11 @@ public:
 	// Sets default values for this character's properties
 	AAuraEnemy();
 
+	// Enemy Interface
 	virtual void HighLightActor_Implementation() override;
-	
 	virtual void UnHighLightActor_Implementation() override;
-
+	// End Enemy Interface
+	
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

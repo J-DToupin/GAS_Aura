@@ -3,8 +3,11 @@
 
 #include "Character/AuraCharacter.h"
 
+#include "AbilitySystemComponent.h"
 #include "Camera/CameraComponent.h"
+#include "Character/Player/AuraPlayerState.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "GameFramework/PlayerState.h"
 #include "GameFramework/SpringArmComponent.h"
 
 
@@ -40,10 +43,35 @@ AAuraCharacter::AAuraCharacter()
 	CameraComponent->bUsePawnControlRotation = false;
 }
 
+void AAuraCharacter::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+
+	InitAbilityActorInfo();
+}
+
+void AAuraCharacter::OnRep_PlayerState()
+{
+	Super::OnRep_PlayerState();
+	
+	InitAbilityActorInfo();
+}
+
+
 // Called when the game starts or when spawned
 void AAuraCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	
+}
+
+void AAuraCharacter::InitAbilityActorInfo()
+{
+	const AAuraPlayerState* AuraPlayerState = GetPlayerState<AAuraPlayerState>();
+	check(AuraPlayerState);
+
+	AuraPlayerState->GetAbilitySystemComponent()->InitAbilityActorInfo(AuraPlayerState->GetOwner(), this);
+
+	AbilitySystemComponent = AuraPlayerState->GetAbilitySystemComponent();
+	AttributeSet = AuraPlayerState->GetAttributeSet();
 }

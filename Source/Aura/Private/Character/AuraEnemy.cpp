@@ -3,11 +3,21 @@
 
 #include "Character/AuraEnemy.h"
 
+#include "AbilitySystemComponent.h"
+#include "GAS/AuraAbilitySystemComponent.h"
+#include "GAS/AuraAttributeSet.h"
+
 
 // Sets default values
 AAuraEnemy::AAuraEnemy()
 {
 	GetMesh()->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
+
+	AbilitySystemComponent = CreateDefaultSubobject<UAuraAbilitySystemComponent>("AbilityComponent");
+	AbilitySystemComponent->SetIsReplicated(true);
+	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Minimal);
+	
+	AttributeSet = CreateDefaultSubobject<UAuraAttributeSet>("AttributeSet");
 }
 
 void AAuraEnemy::HighLightActor_Implementation()
@@ -34,5 +44,7 @@ void AAuraEnemy::UnHighLightActor_Implementation()
 void AAuraEnemy::BeginPlay()
 {
 	Super::BeginPlay();
+
+	AbilitySystemComponent->InitAbilityActorInfo(this, this);
 	
 }
