@@ -28,12 +28,12 @@ void AAuraPlayerController::BeginPlay()
 	check(AuraContext);
 
 	UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer());
-	check(Subsystem);
-
-	// rajouter des mappingContext posibiliter dajouter plusieur avec un system de priorite
-	Subsystem->AddMappingContext(AuraContext, 0);
-
-
+	if (Subsystem)
+	{
+		// rajouter des mappingContext posibiliter dajouter plusieur avec un system de priorite
+		Subsystem->AddMappingContext(AuraContext, 0);
+	}
+	
 	// set the mouse
 	bShowMouseCursor = true;
 	DefaultMouseCursor = EMouseCursor::Hand;
