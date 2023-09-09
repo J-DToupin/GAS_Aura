@@ -4,10 +4,29 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "ActiveGameplayEffectHandle.h"
 #include "AuraEffectActor.generated.h"
 
+class UAbilitySystemComponent;
+struct FActiveGameplayEffectHandle;
 class UGameplayEffect;
 class USphereComponent;
+
+UENUM(BlueprintType)
+enum class EEffectApplicationPolicy
+{
+	ApplyOnOverlap,
+	ApplyOnEndOverlap,
+	DoNotApply
+};
+
+UENUM(BlueprintType)
+enum class EEffectRemovalPolicy
+{
+	RemoveOnOverlap,
+	RemoveEndOverlap,
+	DoNotRemove
+};
 
 UCLASS()
 class AURA_API AAuraEffectActor : public AActor
@@ -34,15 +53,22 @@ protected:
 
 	UFUNCTION(BlueprintCallable)
 	void ApplyEffectToInstigator(AActor* InstigatorActor, TSubclassOf<UGameplayEffect> GEClass);
+
+	UFUNCTION(BlueprintCallable)
+	void RemoveEffectToInstigator(AActor* InstigatorActor);
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Applied Effet")
+	EEffectApplicationPolicy EffectApplicationPolicy =  EEffectApplicationPolicy::ApplyOnOverlap;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Applied Effet")
+	EEffectRemovalPolicy EffectRemovalPolicy = EEffectRemovalPolicy::DoNotRemove;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Applied Effet")
 	TSubclassOf<UGameplayEffect> GamePlayEffectClass;
 
+	TMap<UAbilitySystemComponent*, FActiveGameplayEffectHandle> ActiveEffectHandles; 
+
 private:
 
-	UPROPERTY(EditAnywhere)
-	TObjectPtr<UStaticMeshComponent> MeshComponent;
 	
-	UPROPERTY(EditAnywhere)
-	TObjectPtr<USphereComponent> SphereComponent;
 };

@@ -4,7 +4,6 @@
 #include "Actor/AuraEffectActor.h"
 
 #include "AbilitySystemBlueprintLibrary.h"
-#include "Components/SphereComponent.h"
 #include "GAS/AuraAbilitySystemComponent.h"
 
 
@@ -13,29 +12,39 @@ AAuraEffectActor::AAuraEffectActor()
 {
 
 	SetRootComponent(CreateDefaultSubobject<USceneComponent>("SceneRoot"));
-	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>("Mesh");
-	MeshComponent->SetupAttachment(GetRootComponent());
-	MeshComponent->SetCollisionResponseToAllChannels(ECR_Ignore);
-	
-	SphereComponent = CreateDefaultSubobject<USphereComponent>("Sphere");
-	SphereComponent->SetupAttachment(GetRootComponent());
-
 	
 }
 
 void AAuraEffectActor::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (OtherActor && GamePlayEffectClass )
+	if (!OtherActor) return;
+	
+	if (EffectApplicationPolicy == EEffectApplicationPolicy::ApplyOnOverlap)
 	{
 		ApplyEffectToInstigator(OtherActor, GamePlayEffectClass);
-		this->Destroy();
+	}
+
+	if (EffectRemovalPolicy == EEffectRemovalPolicy::RemoveOnOverlap)
+	{
+		RemoveEffectToInstigator(OtherActor);
 	}
 }
 
 void AAuraEffectActor::EndOverLap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
+	if (!OtherActor) return;
+	
+	if (EffectApplicationPolicy == EEffectApplicationPolicy::ApplyOnEndOverlap)
+	{
+		ApplyEffectToInstigator(OtherActor, GamePlayEffectClass);
+	}
+
+	if (EffectRemovalPolicy == EEffectRemovalPolicy::RemoveEndOverlap)
+	{
+		RemoveEffectToInstigator(OtherActor);
+	}
 }
 
 
@@ -43,9 +52,7 @@ void AAuraEffectActor::EndOverLap(UPrimitiveComponent* OverlappedComponent, AAct
 void AAuraEffectActor::BeginPlay()
 {
 	Super::BeginPlay();
-
-	SphereComponent->OnComponentBeginOverlap.AddDynamic(this, &AAuraEffectActor::OnOverlap);
-	SphereComponent->OnComponentEndOverlap.AddDynamic(this, &AAuraEffectActor::EndOverLap);
+	
 }
 
 void AAuraEffectActor::ApplyEffectToInstigator(AActor* InstigatorActor, TSubclassOf<UGameplayEffect> GEClass)
@@ -62,7 +69,28 @@ void AAuraEffectActor::ApplyEffectToInstigator(AActor* InstigatorActor, TSubclas
 		EffectContextHandle.AddSourceObject(this);
 	
 		const FGameplayEffectSpecHandle EffectSpecHandle =  InstigatorActorASC->MakeOutgoingSpec(GEClass, 1.f, EffectContextHandle);
-		InstigatorActorASC->ApplyGameplayEffectSpecToSelf(*EffectSpecHandle.Data.Get());
+
+		const FActiveGameplayEffectHandle ActiveGameplayEffectHandle = InstigatorActorASC->ApplyGameplayEffectSpecToSelf(*EffectSpecHandle.Data.Get());
+
+		if (EffectSpecHandle.Data.Get()->Def.Get()->DurationPolicy == EGameplayEffectDurationType::Infinite
+			&& EffectRemovalPolicy != EEffectRemovalPolicy::DoNotRemove)
+		{
+			ActiveEffectHandles.Add(InstigatorActorASC, ActiveGameplayEffectHandle);
+		}
+		
 	}
+}
+
+void AAuraEffectActor::RemoveEffectToInstigator(AActor* InstigatorActor)
+{
 	
+	UAbilitySystemComponent* InstigatorASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(InstigatorActor);
+
+	if (!IsValid(InstigatorASC)) return;
+	
+	if (ActiveEffectHandles.Contains(InstigatorASC))
+	{
+		// -1 == remove tout les stack 
+		InstigatorASC->RemoveActiveGameplayEffect(ActiveEffectHandles.FindAndRemoveChecked(InstigatorASC), 1);
+	}
 }
