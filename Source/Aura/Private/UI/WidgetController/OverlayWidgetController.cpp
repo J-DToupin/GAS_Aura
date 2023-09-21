@@ -3,6 +3,7 @@
 
 #include "UI/WidgetController/OverlayWidgetController.h"
 
+#include "GAS/AuraAbilitySystemComponent.h"
 #include "GAS/AuraAttributeSet.h"
 
 void UOverlayWidgetController::BroadcastInitialValues()
@@ -11,7 +12,7 @@ void UOverlayWidgetController::BroadcastInitialValues()
 	{
 		OnHealthChangeDelegate.Broadcast(AuraAttributeSet->GetHealth());
 		OnMaxHealthChangeDelegate.Broadcast(AuraAttributeSet->GetMaxHealth());
-
+		
 		OnManaChangeDelegate.Broadcast(AuraAttributeSet->GetMana());
 		OnMaxManaChangeDelegate.Broadcast(AuraAttributeSet->GetMaxMana());
 	}
@@ -34,6 +35,22 @@ void UOverlayWidgetController::BindCallbacksToDependencies()
 		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(
 			AuraAttributeSet->GetMaxManaAttribute()).AddUObject(this, &UOverlayWidgetController::MaxManaChanged);
 	}
+
+	// utilise un Lambda function [on met this pour que la function est acess au function de cette classe]
+	Cast<UAuraAbilitySystemComponent>(AbilitySystemComponent)->EffectAssetTagDelegate.AddLambda(
+		[this](const FGameplayTagContainer& AssetTags)
+		{
+			for (const FGameplayTag& Tag : AssetTags)
+			{
+				//"A.1".MatchesTag("A") will return True, "A".MatchesTag("A.1") will return False
+				if (Tag.MatchesTag(FGameplayTag::RequestGameplayTag(FName("Message"))))
+				{
+					const FUIWidgetRow* WidgetRow = GetDataTableRowByTag<FUIWidgetRow>(MessageWidgetDataTable, Tag);
+					MessageWidgetRowDelegate.Broadcast(*WidgetRow);
+				}
+			}
+		}
+	);
 	
 }
 

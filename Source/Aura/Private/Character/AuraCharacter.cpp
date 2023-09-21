@@ -9,6 +9,7 @@
 #include "Character/Player/AuraPlayerState.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "GAS/AuraAbilitySystemComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "UI/AuraHUD.h"
 
@@ -73,6 +74,8 @@ void AAuraCharacter::InitAbilityActorInfo()
 	check(AuraPlayerState);
 
 	AuraPlayerState->GetAbilitySystemComponent()->InitAbilityActorInfo(AuraPlayerState->GetOwner(), this);
+
+	Cast<UAuraAbilitySystemComponent>(AuraPlayerState->GetAbilitySystemComponent())->AbilityActorInfoSet();
 
 	AbilitySystemComponent = AuraPlayerState->GetAbilitySystemComponent();
 	AttributeSet = AuraPlayerState->GetAttributeSet();

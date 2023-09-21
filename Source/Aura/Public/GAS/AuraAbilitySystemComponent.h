@@ -7,6 +7,7 @@
 
 #include "AuraAbilitySystemComponent.generated.h"
 
+DECLARE_MULTICAST_DELEGATE_OneParam(FEffectAssetTagDelegate, FGameplayTagContainer);
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class AURA_API UAuraAbilitySystemComponent : public UAbilitySystemComponent
@@ -17,12 +18,14 @@ public:
 	// Sets default values for this component's properties
 	UAuraAbilitySystemComponent();
 
+	void AbilityActorInfoSet();
+
+	FEffectAssetTagDelegate EffectAssetTagDelegate;
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
-public:
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
-	                           FActorComponentTickFunction* ThisTickFunction) override;
+	void EffectApplied(UAbilitySystemComponent* AbilitySystemComponent, const FGameplayEffectSpec& EffectSpec, FActiveGameplayEffectHandle ActiveEffectHandle);
+	
 };

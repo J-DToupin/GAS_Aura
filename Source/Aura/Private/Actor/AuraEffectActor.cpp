@@ -68,7 +68,7 @@ void AAuraEffectActor::ApplyEffectToInstigator(AActor* InstigatorActor, TSubclas
 		// indique objet de la cause de l'effet
 		EffectContextHandle.AddSourceObject(this);
 	
-		const FGameplayEffectSpecHandle EffectSpecHandle =  InstigatorActorASC->MakeOutgoingSpec(GEClass, 1.f, EffectContextHandle);
+		const FGameplayEffectSpecHandle EffectSpecHandle =  InstigatorActorASC->MakeOutgoingSpec(GEClass, ActorLevel, EffectContextHandle);
 
 		const FActiveGameplayEffectHandle ActiveGameplayEffectHandle = InstigatorActorASC->ApplyGameplayEffectSpecToSelf(*EffectSpecHandle.Data.Get());
 

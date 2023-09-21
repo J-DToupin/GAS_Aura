@@ -28,9 +28,9 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-private:
+	virtual void InitAbilityActorInfo() override;
 
-	void InitAbilityActorInfo();
+private:
 	
 	//component
 	UPROPERTY(EditAnywhere)

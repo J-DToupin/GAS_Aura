@@ -66,6 +66,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Applied Effet")
 	TSubclassOf<UGameplayEffect> GamePlayEffectClass;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Applied Effet")
+	float ActorLevel = 1.f;
+
 	TMap<UAbilitySystemComponent*, FActiveGameplayEffectHandle> ActiveEffectHandles; 
 
 private:
