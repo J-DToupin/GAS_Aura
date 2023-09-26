@@ -40,6 +40,11 @@ void AAuraEnemy::UnHighLightActor_Implementation()
 
 }
 
+int32 AAuraEnemy::GetCharacterLevel()
+{
+	return CharacterLevel;
+}
+
 // Called when the game starts or when spawned
 void AAuraEnemy::BeginPlay()
 {

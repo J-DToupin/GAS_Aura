@@ -24,6 +24,11 @@ public:
 	virtual void OnRep_PlayerState() override;
 
 
+	// Combat Interface
+
+	virtual int32 GetCharacterLevel() override;
+
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
