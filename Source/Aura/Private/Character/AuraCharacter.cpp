@@ -92,7 +92,6 @@ void AAuraCharacter::InitAbilityActorInfo()
 		if (AAuraHUD* AuraHUD = AuraPlayerController->GetHUD<AAuraHUD>() )
 		{
 			AuraHUD->InitOverlay(AuraPlayerController, AuraPlayerState, AbilitySystemComponent, AttributeSet);
-			AuraHUD->InitAttributeMenu(AuraPlayerController, AuraPlayerState, AbilitySystemComponent, AttributeSet);
 		}
 	}
 	InitializeDefaultAttributes();

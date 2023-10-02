@@ -48,19 +48,3 @@ void AAuraHUD::InitOverlay(APlayerController* PC, APlayerState* PS, UAbilitySyst
 	OverlayWidgetC->BroadcastInitialValues();
 	OverlayWidget->AddToViewport();
 }
-
-void AAuraHUD::InitAttributeMenu(APlayerController* PC, APlayerState* PS, UAbilitySystemComponent* ASC,
-	UAttributeSet* AS)
-{
-	checkf(AttributeMenuWidgetClass, TEXT("AttributeMenu Widget Class uninitialized in BP_AuraHUD"))
-	checkf(AttributeMenuWidgetControllerClass, TEXT("AttributeMenu WidgetController Class uninitialized in BP_AuraHUD"))
-	
-	AttributeMenuWidget = CreateWidget<UAuraUserWidget>(GetWorld(), AttributeMenuWidgetClass);
-	
-	const FWidgetControllerParams WidgetControllerParams(PC, PS, ASC, AS);
-	UAttributeMenuWidgetController* AttributeMenuWidgetC = GetAttributeMenuWidgetController(WidgetControllerParams);
-	
-	AttributeMenuWidget->SetWidgetController(AttributeMenuWidgetC);
-	AttributeMenuWidgetC->BroadcastInitialValues();
-	AttributeMenuWidget->AddToViewport();
-}
