@@ -5,6 +5,7 @@
 
 #include "Blueprint/UserWidget.h"
 #include "UI/Widget/AuraUserWidget.h"
+#include "UI/WidgetController/AttributeMenuWidgetController.h"
 #include "UI/WidgetController/OverlayWidgetController.h"
 
 UOverlayWidgetController* AAuraHUD::GetOverlayWidgetController(const FWidgetControllerParams& WidgetControllerParams)
@@ -17,6 +18,19 @@ UOverlayWidgetController* AAuraHUD::GetOverlayWidgetController(const FWidgetCont
 	}
 
 	return OverlayWidgetController;
+}
+
+UAttributeMenuWidgetController* AAuraHUD::GetAttributeMenuWidgetController(
+	const FWidgetControllerParams& WidgetControllerParams)
+{
+	if (AttributeMenuWidgetController == nullptr)
+	{
+		AttributeMenuWidgetController = NewObject<UAttributeMenuWidgetController>(this, AttributeMenuWidgetControllerClass);
+		AttributeMenuWidgetController->SetWidgetControllerParams(WidgetControllerParams);
+		AttributeMenuWidgetController->BindCallbacksToDependencies();
+	}
+
+	return AttributeMenuWidgetController;
 }
 
 void AAuraHUD::InitOverlay(APlayerController* PC, APlayerState* PS, UAbilitySystemComponent* ASC, UAttributeSet* AS)
@@ -33,4 +47,20 @@ void AAuraHUD::InitOverlay(APlayerController* PC, APlayerState* PS, UAbilitySyst
 	OverlayWidget->SetWidgetController(OverlayWidgetC);
 	OverlayWidgetC->BroadcastInitialValues();
 	OverlayWidget->AddToViewport();
+}
+
+void AAuraHUD::InitAttributeMenu(APlayerController* PC, APlayerState* PS, UAbilitySystemComponent* ASC,
+	UAttributeSet* AS)
+{
+	checkf(AttributeMenuWidgetClass, TEXT("AttributeMenu Widget Class uninitialized in BP_AuraHUD"))
+	checkf(AttributeMenuWidgetControllerClass, TEXT("AttributeMenu WidgetController Class uninitialized in BP_AuraHUD"))
+	
+	AttributeMenuWidget = CreateWidget<UAuraUserWidget>(GetWorld(), AttributeMenuWidgetClass);
+	
+	const FWidgetControllerParams WidgetControllerParams(PC, PS, ASC, AS);
+	UAttributeMenuWidgetController* AttributeMenuWidgetC = GetAttributeMenuWidgetController(WidgetControllerParams);
+	
+	AttributeMenuWidget->SetWidgetController(AttributeMenuWidgetC);
+	AttributeMenuWidgetC->BroadcastInitialValues();
+	AttributeMenuWidget->AddToViewport();
 }
