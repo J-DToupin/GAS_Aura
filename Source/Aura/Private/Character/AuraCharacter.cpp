@@ -50,6 +50,7 @@ void AAuraCharacter::PossessedBy(AController* NewController)
 	Super::PossessedBy(NewController);
 
 	InitAbilityActorInfo();
+	AddCharacterAbilities();
 }
 
 void AAuraCharacter::OnRep_PlayerState()
@@ -65,6 +66,16 @@ int32 AAuraCharacter::GetCharacterLevel()
 	check(AuraPlayerState);
 	
 	return AuraPlayerState->GetCharacterLevel();
+}
+
+FVector AAuraCharacter::GetMouseLocation()
+{
+	FVector MousePosition{};
+	if (const APlayerController* PlayerController = Cast<APlayerController>(GetController()))
+	{
+		PlayerController->GetMousePosition(MousePosition.X, MousePosition.Y);
+	}
+	return MousePosition;
 }
 
 

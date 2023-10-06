@@ -28,6 +28,8 @@ public:
 
 	virtual int32 GetCharacterLevel() override;
 
+	virtual FVector GetMouseLocation() override;
+
 
 protected:
 	// Called when the game starts or when spawned

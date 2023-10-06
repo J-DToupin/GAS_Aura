@@ -12,9 +12,14 @@ void UAttributeMenuWidgetController::BroadcastInitialValues()
 	if (const UAuraAttributeSet* AuraAttributeSet = Cast<UAuraAttributeSet>(AttributeSet))
 	{
 		check(AttributeInfo)
-		for (auto& PairTagAttributes : AuraAttributeSet->TagsToAttributes)
+		for (FAttributeInfo Info : AttributeInfo->AttributeInformation)
 		{
-			BroadcastAttributeInfo(PairTagAttributes.Key, PairTagAttributes.Value());
+			if (FGameplayAttribute (*const GetGameplayAttributePointer)() = *AuraAttributeSet->TagsToAttributes.Find(Info.AttributeTag))
+			{
+				Info.AttributeValue = GetGameplayAttributePointer().GetNumericValue(AttributeSet);
+				OnAttributeInfoChangeDelegate.Broadcast(Info);
+			}
+			
 		}
 	}
 	
