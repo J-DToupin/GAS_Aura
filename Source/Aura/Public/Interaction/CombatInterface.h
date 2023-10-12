@@ -28,4 +28,7 @@ public:
 	virtual FVector GetCombatSocketLocation();
 
 	virtual FVector GetMouseLocation();
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	void FacingTarget(FVector TargetLocation);
 };
