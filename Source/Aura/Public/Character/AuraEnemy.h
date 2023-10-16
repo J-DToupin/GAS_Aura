@@ -34,6 +34,12 @@ public:
 
 	virtual void BindCallbacksToDependencies();
 
+	UPROPERTY(BlueprintReadOnly, Category="Combat")
+	bool bHitReacting = false;
+
+	UPROPERTY(BlueprintReadOnly, Category="Combat")
+	float BaseWalkSpeed = 250.f;
+
 
 	UPROPERTY(BlueprintAssignable, Category="GAS|Attributes")
 	FOnAttributeChangeSignature OnHealthChangeDelegate;
@@ -55,8 +61,12 @@ protected:
 
 	virtual void InitializeDefaultAttributes() const override;
 
+	UFUNCTION()
+	void HitReact(const FGameplayTag CallbackTag, int32 NewCount);
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<UWidgetComponent> HealthBar;
+
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess), Category="Character")
 	int32 CharacterLevel = 1;

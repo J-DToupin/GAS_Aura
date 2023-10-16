@@ -4,7 +4,9 @@
 #include "Character/AuraEnemy.h"
 
 #include "AbilitySystemComponent.h"
+#include "AuraGameplayTags.h"
 #include "Components/WidgetComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "GAS/AuraAbilitySystemComponent.h"
 #include "GAS/AuraAbilitySystemLibrary.h"
 #include "GAS/AuraAttributeSet.h"
@@ -24,6 +26,8 @@ AAuraEnemy::AAuraEnemy()
 
 	HealthBar = CreateDefaultSubobject<UWidgetComponent>("HealthBar");
 	HealthBar->SetupAttachment(GetRootComponent());
+
+	GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed;
 }
 
 void AAuraEnemy::HighLightActor_Implementation()
@@ -102,6 +106,7 @@ void AAuraEnemy::BeginPlay()
 {
 	Super::BeginPlay();
 	InitAbilityActorInfo();
+	UAuraAbilitySystemLibrary::GiveStartupAbilities(this, AbilitySystemComponent);
 
 	if (UAuraUserWidget* AuraUserWidget = Cast<UAuraUserWidget>(HealthBar->GetUserWidgetObject()))
 	{
@@ -109,6 +114,8 @@ void AAuraEnemy::BeginPlay()
 	}
 	BroadcastInitialValues();
 	BindCallbacksToDependencies();
+
+	AbilitySystemComponent->RegisterGameplayTagEvent(FAuraGameplayTags::Get().Effects_HitReact).AddUObject(this, &AAuraEnemy::HitReact);
 }
 
 void AAuraEnemy::InitAbilityActorInfo()
@@ -124,4 +131,11 @@ void AAuraEnemy::InitAbilityActorInfo()
 void AAuraEnemy::InitializeDefaultAttributes() const
 {
 	UAuraAbilitySystemLibrary::InitializeDefaultAttributes(this, CharacterClass, CharacterLevel, AbilitySystemComponent);
+}
+
+void AAuraEnemy::HitReact(const FGameplayTag CallbackTag, int32 NewCount)
+{
+	bHitReacting = NewCount > 0;
+
+	GetCharacterMovement()->MaxWalkSpeed = bHitReacting ? 0.f : BaseWalkSpeed;
 }

@@ -4,7 +4,7 @@
 #include "GAS/AuraAbilitySystemComponent.h"
 
 #include "AuraGameplayTags.h"
-#include "GAS/AuraGameplayAbility.h"
+#include "GAS/Abilities/AuraGameplayAbility.h"
 
 
 // Sets default values for this component's properties

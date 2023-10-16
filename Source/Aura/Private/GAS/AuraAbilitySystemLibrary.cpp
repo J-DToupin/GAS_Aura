@@ -63,6 +63,21 @@ void UAuraAbilitySystemLibrary::InitializeDefaultAttributes(const UObject* World
 	}
 }
 
+void UAuraAbilitySystemLibrary::GiveStartupAbilities(const UObject* WorldContextObject, UAbilitySystemComponent* ASC)
+{
+	if (const AAuraGameModeBase* AuraGameModeBase = Cast<AAuraGameModeBase>(UGameplayStatics::GetGameMode(WorldContextObject)))
+	{
+		UAuraCharacterClassInfo* AuraCharacterClassInfo = AuraGameModeBase->CharacterClassInfo;
+		check(AuraCharacterClassInfo);
+
+		for (TSubclassOf<UGameplayAbility> AbilityClass : AuraCharacterClassInfo->CommonAbilities)
+		{
+			FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(AbilityClass, 1);
+			ASC->GiveAbility(AbilitySpec);
+		}
+	}
+}
+
 FWidgetControllerParams UAuraAbilitySystemLibrary::GetWidgetControllerParams(const UObject* WorldContextObject)
 {
 	

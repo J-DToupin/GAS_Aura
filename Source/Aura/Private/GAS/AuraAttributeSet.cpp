@@ -74,8 +74,7 @@ void UAuraAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 {
 	Super::PostGameplayEffectExecute(Data);
 
-	const FEffectProperties Props;
-	SetEffectProperties(Data, Props);
+	const FEffectProperties Props = SetEffectProperties(Data);
 
 	if (Data.EvaluatedData.Attribute == GetHealthAttribute())
 	{
@@ -86,7 +85,29 @@ void UAuraAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 	{
 		SetMana(FMath::Clamp(GetMana(), 0.f, GetMaxMana()));
 	}
-	
+	if (Data.EvaluatedData.Attribute == GetIncomingDamageAttribute())
+	{
+		const float LocalIncomingDamage = GetIncomingDamage();
+		SetIncomingDamage(0.f);
+		if (LocalIncomingDamage > 0.f)
+		{
+			const float NewHealth = GetHealth() - LocalIncomingDamage;
+			SetHealth(FMath::Clamp(NewHealth, 0.f, GetMaxHealth()));
+
+			const bool bFatal = NewHealth <= 0.f;
+
+			if (!bFatal)
+			{
+				// active une abilities par un tag
+				FGameplayTagContainer TargetTagContainer;
+				TargetTagContainer.AddTag(FAuraGameplayTags::Get().Effects_HitReact);
+				if (Props.TargetASC)
+				{
+					Props.TargetASC->TryActivateAbilitiesByTag(TargetTagContainer);
+				}
+			}
+		}
+	}
 }
 
 void UAuraAttributeSet::OnRep_Armor(const FGameplayAttributeData& OldArmor) const
@@ -171,9 +192,10 @@ void UAuraAttributeSet::OnRep_MaxMana(const FGameplayAttributeData& OldMaxMana) 
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UAuraAttributeSet, MaxMana, OldMaxMana);
 }
 
-void UAuraAttributeSet::SetEffectProperties(const FGameplayEffectModCallbackData& Data, FEffectProperties Props)
+FEffectProperties UAuraAttributeSet::SetEffectProperties(const FGameplayEffectModCallbackData& Data)
 {
 	// Source = causer of the effect, target of the effect (owner of this AS)
+	FEffectProperties Props;
 	
 	Props.EffectContextHandle = Data.EffectSpec.GetContext();
 	Props.SourceASC = Props.EffectContextHandle.GetOriginalInstigatorAbilitySystemComponent();
@@ -199,4 +221,6 @@ void UAuraAttributeSet::SetEffectProperties(const FGameplayEffectModCallbackData
 		Props.TargetCharacter = Props.TargetController->GetCharacter();
 		Props.TargetASC = &Data.Target;
 	}
+
+	return Props;
 }

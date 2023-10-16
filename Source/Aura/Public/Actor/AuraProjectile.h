@@ -57,6 +57,4 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<USoundBase> ProjectileSound;
-	
-
 };

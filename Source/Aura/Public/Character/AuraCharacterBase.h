@@ -25,6 +25,8 @@ public:
 
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
+	virtual UAnimMontage* GetHitReactMontage_Implementation() override;
+
 	UAttributeSet* GetAttributeSet() const;
 
 protected:
@@ -39,6 +41,8 @@ protected:
 
 	void AddCharacterAbilities() const;
 
+
+	// ICombatInterface
 	virtual FVector GetCombatSocketLocation() override;
 	
 	UPROPERTY(EditAnywhere, Category="Combat")
@@ -66,6 +70,9 @@ private:
 
 	UPROPERTY(EditAnywhere, Category="Abilities")
 	TArray<TSubclassOf<UGameplayAbility>> StartupAbilities;
+
+	UPROPERTY(EditAnywhere, Category="Combat")
+	TObjectPtr<UAnimMontage> HitReactMontage;
 
 	
 };
