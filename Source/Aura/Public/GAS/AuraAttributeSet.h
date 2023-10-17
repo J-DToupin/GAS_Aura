@@ -215,5 +215,7 @@ public:
 	void OnRep_MaxMana(const FGameplayAttributeData& OldMaxMana) const;
 
 private:
+	void ShowFloatingText(FEffectProperties Props, float LocalIncomingDamage);
+
 	FEffectProperties SetEffectProperties(const FGameplayEffectModCallbackData& Data);
 };

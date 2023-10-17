@@ -6,9 +6,11 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "EnhancedInputSubsystems.h"
 #include "GameplayTagContainer.h"
+#include "GameFramework/Character.h"
 #include "GAS/AuraAbilitySystemComponent.h"
 #include "Input/AuraInputComponent.h"
 #include "Interaction/TargetInterface.h"
+#include "UI/Widget/DamageTextComponent.h"
 
 AAuraPlayerController::AAuraPlayerController()
 {
@@ -21,6 +23,21 @@ void AAuraPlayerController::PlayerTick(float DeltaTime)
 
 	CursorTrace();
 	
+}
+
+void AAuraPlayerController::ShowDamageNumber_Implementation(float DamageNum, ACharacter* TargetCharacter)
+{
+	if (DamageTextComponentClass && IsValid(TargetCharacter))
+	{
+		UDamageTextComponent* DamageText = NewObject<UDamageTextComponent>(TargetCharacter, DamageTextComponentClass);
+		// Important quand creer un Object Avec NewObject
+		DamageText->RegisterComponent();
+
+		DamageText->AttachToComponent(TargetCharacter->GetRootComponent(), FAttachmentTransformRules::KeepRelativeTransform);
+		DamageText->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
+		
+		DamageText->SetDamageText(DamageNum);
+	}
 }
 
 void AAuraPlayerController::BeginPlay()

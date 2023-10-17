@@ -6,6 +6,9 @@
 
 #include "AuraGameplayTags.h"
 #include "GameplayEffectExtension.h"
+#include "Character/Player/AuraPlayerController.h"
+#include "Interaction/CombatInterface.h"
+#include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 
 UAuraAttributeSet::UAuraAttributeSet()
@@ -70,6 +73,18 @@ void UAuraAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, 
 	
 }
 
+void UAuraAttributeSet::ShowFloatingText(const FEffectProperties Props, const float LocalIncomingDamage)
+{
+	if (Props.SourceCharacter != Props.TargetCharacter)
+	{
+		if (AAuraPlayerController* APC = Cast<AAuraPlayerController>(UGameplayStatics::GetPlayerController(Props.SourceController, 0)))
+		{
+			APC->ShowDamageNumber(LocalIncomingDamage, Props.TargetCharacter);
+		}
+				
+	}
+}
+
 void UAuraAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
 {
 	Super::PostGameplayEffectExecute(Data);
@@ -96,7 +111,15 @@ void UAuraAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 
 			const bool bFatal = NewHealth <= 0.f;
 
-			if (!bFatal)
+			if (bFatal)
+			{
+				ICombatInterface* CombatInterface = Cast<ICombatInterface>(Props.TargetAvatarActor);
+				if (CombatInterface)
+				{
+					CombatInterface->Die();
+				}
+			}
+			else
 			{
 				// active une abilities par un tag
 				FGameplayTagContainer TargetTagContainer;
@@ -106,6 +129,8 @@ void UAuraAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 					Props.TargetASC->TryActivateAbilitiesByTag(TargetTagContainer);
 				}
 			}
+
+			ShowFloatingText(Props, LocalIncomingDamage);
 		}
 	}
 }

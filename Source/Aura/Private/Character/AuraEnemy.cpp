@@ -55,6 +55,12 @@ int32 AAuraEnemy::GetCharacterLevel()
 	return CharacterLevel;
 }
 
+void AAuraEnemy::Die()
+{
+	SetLifeSpan(LifeSpan);
+	Super::Die();
+}
+
 void AAuraEnemy::BroadcastInitialValues()
 {
 	if (const UAuraAttributeSet* AuraAttributeSet = Cast<UAuraAttributeSet>(AttributeSet))

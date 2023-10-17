@@ -39,11 +39,10 @@ UAttributeMenuWidgetController* UAuraAbilitySystemLibrary::GetAttributeMenuWidge
 
 void UAuraAbilitySystemLibrary::InitializeDefaultAttributes(const UObject* WorldContextObject, ECharacterClass CharacterClass, float Level, UAbilitySystemComponent* ASC)
 {
-	if (const AAuraGameModeBase* AuraGameModeBase = Cast<AAuraGameModeBase>(UGameplayStatics::GetGameMode(WorldContextObject)))
+	if (UAuraCharacterClassInfo* AuraCharacterClassInfo = GetCharacterClassInfo(WorldContextObject))
 	{
 		AActor* AvatarActor = ASC->GetAvatarActor();
-
-		UAuraCharacterClassInfo* AuraCharacterClassInfo = AuraGameModeBase->CharacterClassInfo;
+		
 		check(AuraCharacterClassInfo);
 		
 		const FCharacterClassDefaultInfo ClassDefaultInfo = AuraCharacterClassInfo->GetClassDefaultInfo(CharacterClass);
@@ -65,9 +64,8 @@ void UAuraAbilitySystemLibrary::InitializeDefaultAttributes(const UObject* World
 
 void UAuraAbilitySystemLibrary::GiveStartupAbilities(const UObject* WorldContextObject, UAbilitySystemComponent* ASC)
 {
-	if (const AAuraGameModeBase* AuraGameModeBase = Cast<AAuraGameModeBase>(UGameplayStatics::GetGameMode(WorldContextObject)))
+	if (UAuraCharacterClassInfo* AuraCharacterClassInfo = GetCharacterClassInfo(WorldContextObject))
 	{
-		UAuraCharacterClassInfo* AuraCharacterClassInfo = AuraGameModeBase->CharacterClassInfo;
 		check(AuraCharacterClassInfo);
 
 		for (TSubclassOf<UGameplayAbility> AbilityClass : AuraCharacterClassInfo->CommonAbilities)
@@ -76,6 +74,16 @@ void UAuraAbilitySystemLibrary::GiveStartupAbilities(const UObject* WorldContext
 			ASC->GiveAbility(AbilitySpec);
 		}
 	}
+}
+
+UAuraCharacterClassInfo* UAuraAbilitySystemLibrary::GetCharacterClassInfo(const UObject* WorldContextObject)
+{
+	if (const AAuraGameModeBase* AuraGameModeBase = Cast<AAuraGameModeBase>(UGameplayStatics::GetGameMode(WorldContextObject)))
+	{
+		return  AuraGameModeBase->CharacterClassInfo;
+	}
+
+	return nullptr;
 }
 
 FWidgetControllerParams UAuraAbilitySystemLibrary::GetWidgetControllerParams(const UObject* WorldContextObject)

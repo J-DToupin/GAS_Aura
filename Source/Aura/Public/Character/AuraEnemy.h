@@ -29,6 +29,7 @@ public:
 
 	// Combat Interface
 	virtual int32 GetCharacterLevel() override;
+	virtual void Die() override;
 
 	virtual void BroadcastInitialValues();
 
@@ -39,6 +40,9 @@ public:
 
 	UPROPERTY(BlueprintReadOnly, Category="Combat")
 	float BaseWalkSpeed = 250.f;
+	
+	UPROPERTY(BlueprintReadOnly, Category="Combat")
+	float LifeSpan = 5.f;
 
 
 	UPROPERTY(BlueprintAssignable, Category="GAS|Attributes")
