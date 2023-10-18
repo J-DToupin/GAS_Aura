@@ -4,6 +4,7 @@
 #include "GAS/ExecCalc/ExecCalc_Damage.h"
 
 #include "AbilitySystemComponent.h"
+#include "AuraAbilityTypes.h"
 #include "AuraGameplayTags.h"
 #include "GAS/AuraAbilitySystemLibrary.h"
 #include "GAS/AuraAttributeSet.h"
@@ -108,19 +109,28 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 
 	const FRealCurve* EffectiveCriticalHitResistanceCurve = CharacterClassInfo->DamageCalculationCoefficients->FindCurve(FName("EffectiveCriticalHitResistance"),FString{});
 	const float EffectiveCriticalHitResistanceCoefficient = EffectiveCriticalHitResistanceCurve->Eval(TargetCombatInterface->GetCharacterLevel());
-
+	
+	FGameplayEffectContextHandle EffectContextHandle = Spec.GetContext();
+	
 	SourceCriticalHitChance *= (100 - TargetCriticalHitResistance * EffectiveCriticalHitResistanceCoefficient) * 0.01f;
-	if (SourceCriticalHitChance > FMath::RandRange(0, 100))
+
+	// Check if is a CriticalHit
+	const bool bIsCriticalHit{SourceCriticalHitChance > FMath::RandRange(0, 100)};
+	UAuraAbilitySystemLibrary::SetCriticalHit(EffectContextHandle, bIsCriticalHit);
+	if (bIsCriticalHit)
 	{
 		Damage =  (Damage * 2) + SourceCriticalHitDamage;
+		
 	}
 	
 	// CapTure BlockChance on Target, and determine if there was a successful Block
-	if (TargetBlockChance > FMath::RandRange(0, 100))
+	const bool bIsBlock{TargetBlockChance > FMath::RandRange(0, 100)};
+	UAuraAbilitySystemLibrary::SetBlockedHit(EffectContextHandle, bIsBlock);
+	if (bIsBlock)
 	{
 		Damage *= 0.5;
 	}
-
+	
 	// ArmorPenetration ignore a percentage of the Target Armor
 	const float EffectiveArmor = TargetArmor * (100 - SourceArmorPenetration * ArmorPenetrationCoefficient) * 0.01f;
 	Damage *= (100 - EffectiveArmor * EffectiveArmorCoefficient) * 0.01f;

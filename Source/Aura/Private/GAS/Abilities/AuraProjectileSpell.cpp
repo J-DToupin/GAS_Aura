@@ -38,8 +38,11 @@ void UAuraProjectileSpell::SpawnProjectile(const FVector& ProjectileTargetLocati
 				ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
 
 			const UAbilitySystemComponent* SourceASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetAvatarActorFromActorInfo());
+			FGameplayEffectContextHandle EffectContextHandle = SourceASC->MakeEffectContext();
+			EffectContextHandle.SetAbility(this);
+			EffectContextHandle.AddSourceObject(Projectile);
 
-			const FGameplayEffectSpecHandle GameplayEffectSpecHandle = SourceASC->MakeOutgoingSpec(DamageEffectClass, GetAbilityLevel(), SourceASC->MakeEffectContext());
+			const FGameplayEffectSpecHandle GameplayEffectSpecHandle = SourceASC->MakeOutgoingSpec(DamageEffectClass, GetAbilityLevel(), EffectContextHandle);
 
 			// Set by Caller
 			const FAuraGameplayTags GameplayTags = FAuraGameplayTags::Get();
