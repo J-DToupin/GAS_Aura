@@ -74,6 +74,27 @@ public:
 
 	TMap<FGameplayTag, TStaticFuncPtr<FGameplayAttribute()>> TagsToAttributes;
 
+
+	/*
+	* Resistance
+	*/
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing= "OnRep_ResistanceFire", Category="Resistance Attributes")
+	FGameplayAttributeData ResistanceFire;
+	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, ResistanceFire);
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing= "OnRep_ResistanceLightning", Category="Resistance Attributes")
+	FGameplayAttributeData ResistanceLightning;
+	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, ResistanceLightning);
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing= "OnRep_ResistanceArcane", Category="Resistance Attributes")
+	FGameplayAttributeData ResistanceArcane;
+	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, ResistanceArcane);
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing= "OnRep_ResistancePhysical", Category="Resistance Attributes")
+	FGameplayAttributeData ResistancePhysical;
+	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, ResistancePhysical);
+	
+
 	/**
 	 * Secondary Attributes
 	 */
@@ -156,6 +177,18 @@ public:
 	FGameplayAttributeData IncomingDamage;
 	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, IncomingDamage);
 
+	/*
+	* Resistance
+	*/
+	UFUNCTION()
+	void OnRep_ResistanceFire(const FGameplayAttributeData& OldResistanceFire) const;
+	UFUNCTION()
+	void OnRep_ResistanceLightning(const FGameplayAttributeData& OldResistanceLightning) const;
+	UFUNCTION()
+	void OnRep_ResistanceArcane(const FGameplayAttributeData& OldResistanceArcane) const;
+	UFUNCTION()
+	void OnRep_ResistancePhysical(const FGameplayAttributeData& OldResistancePhysical) const;
+	
 
 	/**
 	 * Secondary Attributes

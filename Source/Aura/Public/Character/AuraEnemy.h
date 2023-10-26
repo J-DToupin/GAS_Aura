@@ -11,6 +11,8 @@
 
 
 class UWidgetComponent;
+class UBehaviorTree;
+class AAuraAIController;
 
 
 UCLASS()
@@ -21,6 +23,8 @@ class AURA_API AAuraEnemy : public AAuraCharacterBase, public ITargetInterface
 public:
 	// Sets default values for this character's properties
 	AAuraEnemy();
+
+	virtual void PossessedBy(AController* NewController) override;
 
 	// Enemy Interface
 	virtual void HighLightActor_Implementation() override;
@@ -61,6 +65,8 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	void HitReactTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
+
 	virtual void InitAbilityActorInfo() override;
 
 	virtual void InitializeDefaultAttributes() const override;
@@ -70,6 +76,14 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<UWidgetComponent> HealthBar;
+
+	// AI
+	UPROPERTY(EditAnywhere, Category="AI")
+	TObjectPtr<UBehaviorTree> BehaviorTree;
+
+	UPROPERTY()
+	TObjectPtr<AAuraAIController> AuraAIController;
+	
 
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess), Category="Character")

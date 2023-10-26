@@ -57,16 +57,22 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void RemoveEffectToInstigator(AActor* InstigatorActor);
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Applied Effet")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Applied Effects")
+	bool bApplyEffectToEnemies = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Applied Effects")
+	bool bDestroyOnEffectApplication = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Applied Effects")
 	EEffectApplicationPolicy EffectApplicationPolicy =  EEffectApplicationPolicy::ApplyOnOverlap;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Applied Effet")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Applied Effects")
 	EEffectRemovalPolicy EffectRemovalPolicy = EEffectRemovalPolicy::DoNotRemove;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Applied Effet")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Applied Effects")
 	TSubclassOf<UGameplayEffect> GamePlayEffectClass;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Applied Effet")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Applied Effects")
 	float ActorLevel = 1.f;
 
 	TMap<UAbilitySystemComponent*, FActiveGameplayEffectHandle> ActiveEffectHandles; 

@@ -20,8 +20,6 @@ void AAuraEffectItem::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	Super::OnOverlap(OverlappedComponent, OtherActor, OtherComp, OtherBodyIndex, bFromSweep, SweepResult);
-	
-	this->Destroy();
 }
 
 void AAuraEffectItem::EndOverLap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,

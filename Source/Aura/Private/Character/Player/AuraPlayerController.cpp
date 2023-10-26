@@ -25,9 +25,9 @@ void AAuraPlayerController::PlayerTick(float DeltaTime)
 	
 }
 
-void AAuraPlayerController::ShowDamageNumber_Implementation(float DamageNum, ACharacter* TargetCharacter)
+void AAuraPlayerController::ShowDamageNumber_Implementation(float DamageNum, ACharacter* TargetCharacter,const bool bIsBlock,const bool bIsCriticalHit)
 {
-	if (DamageTextComponentClass && IsValid(TargetCharacter))
+	if (DamageTextComponentClass && IsValid(TargetCharacter) && IsLocalController())
 	{
 		UDamageTextComponent* DamageText = NewObject<UDamageTextComponent>(TargetCharacter, DamageTextComponentClass);
 		// Important quand creer un Object Avec NewObject
@@ -36,7 +36,7 @@ void AAuraPlayerController::ShowDamageNumber_Implementation(float DamageNum, ACh
 		DamageText->AttachToComponent(TargetCharacter->GetRootComponent(), FAttachmentTransformRules::KeepRelativeTransform);
 		DamageText->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
 		
-		DamageText->SetDamageText(DamageNum);
+		DamageText->SetDamageText(DamageNum, bIsBlock, bIsCriticalHit);
 	}
 }
 
