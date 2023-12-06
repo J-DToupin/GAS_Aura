@@ -9,6 +9,7 @@
 #include "AuraCharacterBase.generated.h"
 
 
+class UNiagaraSystem;
 class UGameplayAbility;
 class UGameplayEffect;
 class UAttributeSet;
@@ -27,13 +28,32 @@ public:
 
 	virtual UAnimMontage* GetHitReactMontage_Implementation() override;
 
-	virtual void Die() override;
+	
 
 	// Multicast RPC
 	UFUNCTION(NetMulticast, Reliable)
 	virtual void MulticastHandleDeath();
 
 	UAttributeSet* GetAttributeSet() const;
+
+	// ICombatInterface
+	virtual void Die() override;
+	
+	virtual FVector GetCombatSocketLocation_Implementation(const FGameplayTag& MontageTag) override;
+
+	virtual FTaggedMontage GetTaggedMontageByTag_Implementation(const FGameplayTag& MontageTag) override;
+
+	virtual bool IsDead_Implementation() const override;
+
+	virtual AActor* GetAvatar_Implementation() override;
+
+	virtual TArray<FTaggedMontage> GetAttackMontages_Implementation() override;
+
+	virtual UNiagaraSystem* GetBloodEffect_Implementation() override;
+	// ~ICombatInterface
+
+	UPROPERTY(EditAnywhere, Category="Combat")
+	TArray<FTaggedMontage> AttackMontages;
 
 protected:
 	// Called when the game starts or when spawned
@@ -47,15 +67,20 @@ protected:
 
 	void AddCharacterAbilities() const;
 
-
-	// ICombatInterface
-	virtual FVector GetCombatSocketLocation() override;
 	
-	UPROPERTY(EditAnywhere, Category="Combat")
+	bool bDead = false;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Combat")
 	TObjectPtr<USkeletalMeshComponent> Weapon;
 
 	UPROPERTY(EditAnywhere, Category="Combat")
 	FName WeaponTipSocketName;
+
+	UPROPERTY(EditAnywhere, Category="Combat")
+	FName LeftHandSocketName;
+
+	UPROPERTY(EditAnywhere, Category="Combat")
+	FName RightHandSocketName;
 
 	UPROPERTY()
 	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;
@@ -87,6 +112,13 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TObjectPtr<UMaterialInstance> WeaponDissolveMaterialInstance;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Combat")
+	TObjectPtr<UNiagaraSystem > BloodEffect;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Combat")
+	TObjectPtr<USoundBase> DeathSound;
+
 
 private:
 

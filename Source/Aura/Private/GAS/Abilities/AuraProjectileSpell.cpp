@@ -22,13 +22,15 @@ void UAuraProjectileSpell::SpawnProjectile(const FVector& ProjectileTargetLocati
 	const bool bIsServer = GetAvatarActorFromActorInfo()->HasAuthority();
 	if (!bIsServer) return;
 	
-	ICombatInterface* CombatInterface = Cast<ICombatInterface>(GetAvatarActorFromActorInfo());
+	
 
-	if (CombatInterface)
+	if (GetAvatarActorFromActorInfo()->Implements<UCombatInterface>())
 	{
-		const FVector SocketLocation = CombatInterface->GetCombatSocketLocation();
+		const FVector SocketLocation = ICombatInterface::Execute_GetCombatSocketLocation(GetAvatarActorFromActorInfo(),
+			FAuraGameplayTags::Get().CombatSocket_Weapon);
 		FTransform SpawnTransform;
 		FRotator Rotator = (ProjectileTargetLocation - SocketLocation).Rotation();
+		Rotator.Pitch = 0.f;
 		
 		SpawnTransform.SetLocation(SocketLocation);
 		SpawnTransform.SetRotation(Rotator.Quaternion());

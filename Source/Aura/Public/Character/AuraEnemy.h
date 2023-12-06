@@ -35,6 +35,10 @@ public:
 	virtual int32 GetCharacterLevel() override;
 	virtual void Die() override;
 
+	virtual void SetCombatTarget_Implementation(AActor* InCombatTarget) override;
+
+	virtual AActor* GetCombatTarget_Implementation() const override;
+
 	virtual void BroadcastInitialValues();
 
 	virtual void BindCallbacksToDependencies();
@@ -42,11 +46,14 @@ public:
 	UPROPERTY(BlueprintReadOnly, Category="Combat")
 	bool bHitReacting = false;
 
-	UPROPERTY(BlueprintReadOnly, Category="Combat")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Combat")
 	float BaseWalkSpeed = 250.f;
 	
 	UPROPERTY(BlueprintReadOnly, Category="Combat")
 	float LifeSpan = 5.f;
+
+	UPROPERTY(BlueprintReadWrite, Category="Combat")
+	TObjectPtr<AActor> CombatTarget;
 
 
 	UPROPERTY(BlueprintAssignable, Category="GAS|Attributes")
@@ -60,6 +67,8 @@ public:
 	
 	UPROPERTY(BlueprintAssignable, Category="GAS|Attributes")
 	FOnAttributeChangeSignature OnMaxManaChangeDelegate;
+
+	
 
 protected:
 	// Called when the game starts or when spawned
