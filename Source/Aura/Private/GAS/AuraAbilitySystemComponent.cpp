@@ -3,9 +3,11 @@
 
 #include "GAS/AuraAbilitySystemComponent.h"
 
+#include "AbilitySystemBlueprintLibrary.h"
 #include "AuraGameplayTags.h"
 #include "Aura/AuraLogChannels.h"
 #include "GAS/Abilities/AuraGameplayAbility.h"
+#include "Interaction/PlayerInterface.h"
 
 
 // Sets default values for this component's properties
@@ -21,6 +23,29 @@ void UAuraAbilitySystemComponent::AbilityActorInfoSet()
 	const FAuraGameplayTags& GameplayTags = FAuraGameplayTags::Get();
 
 	const FString TestGameplayTags = GameplayTags.Attributes_Secondary_Armor.ToString();
+}
+
+void UAuraAbilitySystemComponent::UpgradeAttribute(const FGameplayTag& AttributeTag)
+{
+	if (GetAvatarActor()->Implements<UPlayerInterface>())
+	{
+		if (IPlayerInterface::Execute_GetAttributePoints(GetAvatarActor()))
+		{
+			ServerUpgradeAttribute(AttributeTag);
+		}
+		
+	}
+}
+
+void UAuraAbilitySystemComponent::ServerUpgradeAttribute_Implementation(const FGameplayTag& AttributeTag)
+{
+	FGameplayEventData Payload;
+	Payload.EventTag = AttributeTag;
+	Payload.EventMagnitude = 1.f;
+
+	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(GetAvatarActor(), AttributeTag, Payload);
+
+	IPlayerInterface::Execute_AddToAttributePoint(GetAvatarActor(), -1);
 }
 
 
@@ -40,6 +65,16 @@ void UAuraAbilitySystemComponent::AddCharacterAbilities(const TArray<TSubclassOf
 		AbilitiesGivenDelegate.Broadcast(this);
 		//GiveAbility(AbilitySpec);
 		//GiveAbilityAndActivateOnce(AbilitySpec);
+	}
+}
+
+void UAuraAbilitySystemComponent::AddCharacterPassiveAbilities(
+	const TArray<TSubclassOf<UGameplayAbility>>& StartupPassiveAbilities)
+{
+	for (const TSubclassOf<UGameplayAbility> AbilityClass : StartupPassiveAbilities)
+	{
+		FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(AbilityClass, 1);
+		GiveAbilityAndActivateOnce(AbilitySpec);
 	}
 }
 
@@ -77,7 +112,7 @@ void UAuraAbilitySystemComponent::ForEachAbility(const FForEachAbility& Delegate
 	FScopedAbilityListLock ActiveScopeLock(*this);
 	for (const FGameplayAbilitySpec AbilitySpec : GetActivatableAbilities())
 	{
-		if (Delegate.ExecuteIfBound(AbilitySpec))
+		if (!Delegate.ExecuteIfBound(AbilitySpec))
 		{
 			// __FUNCTION__ return la function ou on est
 			UE_LOG(LogAura, Error, TEXT("Failed to execute delegate in [%hs}"), __FUNCTION__)

@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "Data/AuraCharacterClassInfo.h"
-#include "Interaction/CombatInterface.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "UI/WidgetController/AuraWidgetController.h"
 #include "AuraAbilitySystemLibrary.generated.h"
@@ -54,6 +53,9 @@ public:
 
 	UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|GameplayMechanics")
 	static bool IsNotFriend(AActor* FirstActor, AActor* SecondActor);
+
+	UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|GameplayMechanics")
+	static int32 GetXpOnEnemies(const UObject* WorldContextObject, ECharacterClass CharacterClass, int32 Level);
 
 private:
 	static FWidgetControllerParams GetWidgetControllerParams(const UObject* WorldContextObject);

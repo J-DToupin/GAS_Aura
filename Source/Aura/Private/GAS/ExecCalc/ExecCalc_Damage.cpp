@@ -89,10 +89,7 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 
 	AActor* SourceActor = SourceASC ? SourceASC->GetAvatarActor() : nullptr;
 	AActor* TargetActor = TargetASC ? TargetASC->GetAvatarActor() : nullptr;
-
-	ICombatInterface* SourceCombatInterface = Cast<ICombatInterface>(SourceActor);
-	ICombatInterface* TargetCombatInterface = Cast<ICombatInterface>(TargetActor);
-
+	
 	const FGameplayEffectSpec& Spec = ExecutionParams.GetOwningSpec();
 
 	const FGameplayTagContainer* SourceTags = Spec.CapturedSourceTags.GetAggregatedTags();
@@ -151,13 +148,26 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 	// Find the Coefficient by Level 
 	const UAuraCharacterClassInfo* CharacterClassInfo = UAuraAbilitySystemLibrary::GetCharacterClassInfo(SourceActor);
 	const FRealCurve* ArmorPenetrationCurve = CharacterClassInfo->DamageCalculationCoefficients->FindCurve(FName("ArmorPenetration"),FString{});
-	const float ArmorPenetrationCoefficient = ArmorPenetrationCurve->Eval(SourceCombatInterface->GetCharacterLevel());
-	
-	const FRealCurve* EffectiveArmorCurve = CharacterClassInfo->DamageCalculationCoefficients->FindCurve(FName("EffectiveArmor"),FString{});
-	const float EffectiveArmorCoefficient = EffectiveArmorCurve->Eval(TargetCombatInterface->GetCharacterLevel());
 
-	const FRealCurve* EffectiveCriticalHitResistanceCurve = CharacterClassInfo->DamageCalculationCoefficients->FindCurve(FName("EffectiveCriticalHitResistance"),FString{});
-	const float EffectiveCriticalHitResistanceCoefficient = EffectiveCriticalHitResistanceCurve->Eval(TargetCombatInterface->GetCharacterLevel());
+	float ArmorPenetrationCoefficient{};
+	if (SourceActor->Implements<UCombatInterface>())
+	{
+		ArmorPenetrationCoefficient = ArmorPenetrationCurve->Eval(ICombatInterface::Execute_GetCharacterLevel(SourceActor));
+	}
+
+	float EffectiveArmorCoefficient{};
+	float EffectiveCriticalHitResistanceCoefficient{};
+	if (TargetActor->Implements<UCombatInterface>())
+	{
+		const FRealCurve* EffectiveArmorCurve = CharacterClassInfo->DamageCalculationCoefficients->FindCurve(FName("EffectiveArmor"),FString{});
+		EffectiveArmorCoefficient = EffectiveArmorCurve->Eval(ICombatInterface::Execute_GetCharacterLevel(TargetActor));
+
+		const FRealCurve* EffectiveCriticalHitResistanceCurve = CharacterClassInfo->DamageCalculationCoefficients->FindCurve(FName("EffectiveCriticalHitResistance"),FString{});
+		EffectiveCriticalHitResistanceCoefficient = EffectiveCriticalHitResistanceCurve->Eval(ICombatInterface::Execute_GetCharacterLevel(TargetActor));
+	}
+	
+
+	
 	
 	FGameplayEffectContextHandle EffectContextHandle = Spec.GetContext();
 	

@@ -72,6 +72,8 @@ public:
 
 	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
 
+	virtual void PostAttributeChange(const FGameplayAttribute& Attribute, float OldValue, float NewValue) override;
+
 	TMap<FGameplayTag, TStaticFuncPtr<FGameplayAttribute()>> TagsToAttributes;
 
 
@@ -177,6 +179,10 @@ public:
 	FGameplayAttributeData IncomingDamage;
 	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, IncomingDamage);
 
+	UPROPERTY(BlueprintReadOnly, Category="Meta Attributes")
+	FGameplayAttributeData IncomingXp;
+	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, IncomingXp);
+
 	/*
 	* Resistance
 	*/
@@ -251,4 +257,8 @@ private:
 	void ShowFloatingText(const FEffectProperties& Props, float LocalIncomingDamage);
 
 	FEffectProperties SetEffectProperties(const FGameplayEffectModCallbackData& Data);
+
+	void SendXpEvent(const FEffectProperties& Props);
+	bool bTopOffHealth = false;
+	bool bTopOffMana = false;
 };

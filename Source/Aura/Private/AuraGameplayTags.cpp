@@ -152,6 +152,14 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	GameplayTags.DamageTypesToResistances.Add(GameplayTags.Damage_Arcane, GameplayTags.Attributes_Resistance_Arcane);
 	GameplayTags.DamageTypesToResistances.Add(GameplayTags.Damage_Physical, GameplayTags.Attributes_Resistance_Physical);
 
+	
+	/*
+	* Meta
+	*/
+
+	GameplayTags.Attributes_Meta_IncomingXp = UGameplayTagsManager::Get().
+	AddNativeGameplayTag(FName("Attributes.Meta.IncomingXp"),
+		FString("Meta IncomingXp"));
 
 	/*
 	* Combat Socket

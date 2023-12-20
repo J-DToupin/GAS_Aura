@@ -80,9 +80,9 @@ void UAuraAbilitySystemLibrary::GiveStartupAbilities(const UObject* WorldContext
 
 		for (TSubclassOf<UGameplayAbility> AbilityClass : DefaultInfo.StartupAbilities)
 		{
-			if (ICombatInterface* CombatInterface = Cast<ICombatInterface>(ASC->GetAvatarActor()))
+			if (ASC->GetAvatarActor()->Implements<UCombatInterface>())
 			{
-				FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(AbilityClass, CombatInterface->GetCharacterLevel());
+				FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(AbilityClass, ICombatInterface::Execute_GetCharacterLevel(ASC->GetAvatarActor()));
 				ASC->GiveAbility(AbilitySpec);
 			}
 		}
@@ -170,6 +170,17 @@ bool UAuraAbilitySystemLibrary::IsNotFriend(AActor* FirstActor, AActor* SecondAc
 	}
 
 	return FirstIsPlayer != SecondIsPlayer;
+}
+
+int32 UAuraAbilitySystemLibrary::GetXpOnEnemies(const UObject* WorldContextObject, const ECharacterClass CharacterClass, const int32 Level)
+{
+	const FScalableFloat XpRewardCurve = GetCharacterClassInfo(WorldContextObject)->GetClassDefaultInfo(CharacterClass).XpReward;
+	if (XpRewardCurve.IsValid())
+	{
+		return XpRewardCurve.GetValueAtLevel(Level);
+	}
+
+	return 0;
 }
 
 FWidgetControllerParams UAuraAbilitySystemLibrary::GetWidgetControllerParams(const UObject* WorldContextObject)

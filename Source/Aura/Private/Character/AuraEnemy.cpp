@@ -72,9 +72,14 @@ void AAuraEnemy::UnHighLightActor_Implementation()
 
 }
 
-int32 AAuraEnemy::GetCharacterLevel()
+int32 AAuraEnemy::GetCharacterLevel_Implementation()
 {
 	return CharacterLevel;
+}
+
+ECharacterClass AAuraEnemy::GetCharacterClass_Implementation()
+{
+	return CharacterClass;
 }
 
 void AAuraEnemy::Die()

@@ -3,9 +3,11 @@
 
 #include "UI/WidgetController/OverlayWidgetController.h"
 
+#include "Character/Player/AuraPlayerState.h"
 #include "GAS/AuraAbilitySystemComponent.h"
 #include "GAS/AuraAttributeSet.h"
 #include "GAS/Data/AbilityInfo.h"
+#include "GAS/Data/AuraLevelUpInfo.h"
 
 void UOverlayWidgetController::BroadcastInitialValues()
 {
@@ -17,11 +19,27 @@ void UOverlayWidgetController::BroadcastInitialValues()
 		OnManaChangeDelegate.Broadcast(AuraAttributeSet->GetMana());
 		OnMaxManaChangeDelegate.Broadcast(AuraAttributeSet->GetMaxMana());
 	}
+
+	if (const AAuraPlayerState* AuraPlayerState = Cast<AAuraPlayerState>(PlayerState))
+	{
+		OnXpChangeDelegate.Broadcast(AuraPlayerState->GetCharacterExperience());
+		OnPlayerLevelChangeDelegate.Broadcast(AuraPlayerState->GetCharacterLevel());
+	}
 	
 }
 
 void UOverlayWidgetController::BindCallbacksToDependencies()
 {
+	if (AAuraPlayerState* AuraPlayerState = Cast<AAuraPlayerState>(PlayerState))
+	{
+		AuraPlayerState->OnChangeXpDelegate.AddUObject(this, &UOverlayWidgetController::OnXpChanged);
+		AuraPlayerState->OnChangeLevelDelegate.AddLambda([this](int32 NewLevel)
+		{
+			OnPlayerLevelChangeDelegate.Broadcast(NewLevel);
+		});
+	}
+
+	
 	if (const UAuraAttributeSet* AuraAttributeSet = Cast<UAuraAttributeSet>(AttributeSet))
 	{
 		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(
@@ -100,4 +118,34 @@ void UOverlayWidgetController::OnInitializeStartupAbility(UAuraAbilitySystemComp
 	});
 
 	AuraAbilitySystemComponent->ForEachAbility(BroadcastDelegate);
+}
+
+void UOverlayWidgetController::OnXpChanged(const int32 AmountXp)
+{
+	if (const AAuraPlayerState* AuraPlayerState = Cast<AAuraPlayerState>(PlayerState))
+	{
+		const UAuraLevelUpInfo* LevelUpInfo = AuraPlayerState->LevelUpInfo;
+		checkf(LevelUpInfo, TEXT("LevelUpInfo not Setup in AuraPlayerState"))
+
+		const int32 IndexLevel = LevelUpInfo->FindLevelByXp(AmountXp);
+		const int32 MaxLevel = LevelUpInfo->LevelUpInfos.Num();
+
+		if (IndexLevel <= MaxLevel && IndexLevel > 0)
+		{
+			
+			const int32 PreviousLevelUpRequirement = LevelUpInfo->LevelUpInfos[IndexLevel - 1].LevelUpRequirement;
+			
+			const int32 LevelUpRequirement = LevelUpInfo->LevelUpInfos[IndexLevel].LevelUpRequirement;
+			
+			const int32 DeltaLevelRequirement = LevelUpRequirement - PreviousLevelUpRequirement;
+			const int32 XPForThisLevel = AmountXp - PreviousLevelUpRequirement;
+
+			if (DeltaLevelRequirement > 0)
+			{
+				const float XPBarPercent = static_cast<float>(XPForThisLevel) / static_cast<float>(DeltaLevelRequirement);
+				OnXpChangeDelegate.Broadcast(XPBarPercent);
+			}
+			
+		}
+	}
 }
