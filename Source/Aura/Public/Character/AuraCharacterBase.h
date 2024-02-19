@@ -9,6 +9,7 @@
 #include "AuraCharacterBase.generated.h"
 
 
+class UDebuffNiagaraComponent;
 class UNiagaraSystem;
 class UGameplayAbility;
 class UGameplayEffect;
@@ -37,6 +38,12 @@ public:
 	UAttributeSet* GetAttributeSet() const;
 
 	// ICombatInterface
+
+
+	virtual FOnDeathSignature GetOnDeathDelegate() override;
+	
+	virtual FOnASCRegisteredSignature GetOnASCRegisteredDelegate() override;
+	
 	virtual void Die() override;
 	
 	virtual FVector GetCombatSocketLocation_Implementation(const FGameplayTag& MontageTag) override;
@@ -84,6 +91,10 @@ protected:
 
 	UPROPERTY()
 	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;
+	
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UDebuffNiagaraComponent> DebuffNiagaraComponent;
+
 
 	UPROPERTY()
 	TObjectPtr<UAttributeSet> AttributeSet;
@@ -118,8 +129,10 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Combat")
 	TObjectPtr<USoundBase> DeathSound;
-
-
+	
+	FOnASCRegisteredSignature OnAscRegisteredDelegate;
+	FOnDeathSignature OnDeathDelegate;
+	
 private:
 
 	UPROPERTY(EditAnywhere, Category="Abilities")

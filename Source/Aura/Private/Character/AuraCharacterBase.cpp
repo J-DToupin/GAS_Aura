@@ -8,12 +8,17 @@
 #include "Aura/Aura.h"
 #include "Components/CapsuleComponent.h"
 #include "GAS/AuraAbilitySystemComponent.h"
+#include "GAS/Debuff/DebuffNiagaraComponent.h"
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values
 AAuraCharacterBase::AAuraCharacterBase()
 {
 
+	DebuffNiagaraComponent = CreateDefaultSubobject<UDebuffNiagaraComponent>("DebuffComponent");
+	DebuffNiagaraComponent->SetupAttachment(GetRootComponent());
+	DebuffNiagaraComponent->DebuffTag = FAuraGameplayTags::Get().Debuff_Burn;
+	
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
 	GetCapsuleComponent()->SetGenerateOverlapEvents(false);
 	
@@ -60,11 +65,22 @@ void AAuraCharacterBase::MulticastHandleDeath_Implementation()
 	
 	Dissolve();
 	bDead = true;
+	OnDeathDelegate.Broadcast(this);
 }
 
 UAttributeSet* AAuraCharacterBase::GetAttributeSet() const
 {
 	return AttributeSet;
+}
+
+FOnDeathSignature AAuraCharacterBase::GetOnDeathDelegate()
+{
+	return OnDeathDelegate;
+}
+
+FOnASCRegisteredSignature AAuraCharacterBase::GetOnASCRegisteredDelegate()
+{
+	return OnAscRegisteredDelegate;
 }
 
 // Called when the game starts or when spawned

@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AbilitySystemComponent.h"
 #include "GameplayTagContainer.h"
 #include "UObject/Interface.h"
 #include "CombatInterface.generated.h"
@@ -11,6 +12,8 @@
 enum class ECharacterClass : uint8;
 class UNiagaraSystem;
 
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnASCRegisteredSignature, UAbilitySystemComponent*);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDeathSignature, AActor*, DeadActor);
 USTRUCT(BlueprintType)
 struct FTaggedMontage
 {
@@ -47,6 +50,9 @@ class AURA_API ICombatInterface
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
 
+	virtual FOnASCRegisteredSignature GetOnASCRegisteredDelegate() = 0;
+	virtual FOnDeathSignature GetOnDeathDelegate() = 0;
+
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	int32 GetCharacterLevel();
 
@@ -80,5 +86,6 @@ public:
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	FTaggedMontage GetTaggedMontageByTag(const FGameplayTag& MontageTag);
+
 	
 };

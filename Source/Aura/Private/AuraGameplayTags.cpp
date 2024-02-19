@@ -152,6 +152,49 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	GameplayTags.DamageTypesToResistances.Add(GameplayTags.Damage_Arcane, GameplayTags.Attributes_Resistance_Arcane);
 	GameplayTags.DamageTypesToResistances.Add(GameplayTags.Damage_Physical, GameplayTags.Attributes_Resistance_Physical);
 
+	/*
+	* Debuffs
+	*/
+	
+	GameplayTags.Debuff_Burn = UGameplayTagsManager::Get().
+	AddNativeGameplayTag(FName("Debuff.Burn"),
+		FString("Debuff for fire damage"));
+
+	GameplayTags.Debuff_Stun = UGameplayTagsManager::Get().
+	AddNativeGameplayTag(FName("Debuff.Stun"),
+		FString("Debuff for Lightning damage"));
+
+	GameplayTags.Debuff_Arcane = UGameplayTagsManager::Get().
+	AddNativeGameplayTag(FName("Debuff.Arcane"),
+		FString("Debuff for Arcane damage"));
+
+	GameplayTags.Debuff_Physical = UGameplayTagsManager::Get().
+	AddNativeGameplayTag(FName("Debuff.Physical"),
+		FString("Debuff for  Physical damage"));
+
+	GameplayTags.DamageTypeDebuffs.Add(GameplayTags.Damage_Fire, GameplayTags.Debuff_Burn);
+	GameplayTags.DamageTypeDebuffs.Add(GameplayTags.Damage_Lightning, GameplayTags.Debuff_Stun);
+	GameplayTags.DamageTypeDebuffs.Add(GameplayTags.Damage_Arcane, GameplayTags.Debuff_Arcane);
+	GameplayTags.DamageTypeDebuffs.Add(GameplayTags.Damage_Physical, GameplayTags.Debuff_Physical);
+
+
+	GameplayTags.Debuff_Chance = UGameplayTagsManager::Get().
+	AddNativeGameplayTag(FName("Debuff.Chance"),
+		FString("Debuff Chance"));
+
+	GameplayTags.Debuff_Damage = UGameplayTagsManager::Get().
+	AddNativeGameplayTag(FName("Debuff.Damage"),
+		FString("Debuff Damage"));
+
+
+	GameplayTags.Debuff_Frequency = UGameplayTagsManager::Get().
+	AddNativeGameplayTag(FName("Debuff.Frequency"),
+		FString("Debuff Frequency"));
+
+
+	GameplayTags.Debuff_Duration = UGameplayTagsManager::Get().
+	AddNativeGameplayTag(FName("Debuff.Duration"),
+		FString("Debuff Duration"));
 	
 	/*
 	* Meta
@@ -210,13 +253,13 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	AddNativeGameplayTag(FName("Abilities.Attack"),
 		FString("Attack Ability Tag"));
 
-	GameplayTags.Abilities_FIre_FireBolt = UGameplayTagsManager::Get().
+	GameplayTags.Abilities_Fire_FireBolt = UGameplayTagsManager::Get().
 	AddNativeGameplayTag(FName("Abilities.FIre.FireBolt"),
 		FString("FireBolt Ability Tag"));
 
 
 	//Cooldown
-	GameplayTags.Cooldown_FIre_FireBolt = UGameplayTagsManager::Get().
+	GameplayTags.Cooldown_Fire_FireBolt = UGameplayTagsManager::Get().
 	AddNativeGameplayTag(FName("Cooldown.FIre.FireBolt"),
 		FString("Cooldown. FireBolt Ability Tag"));
 

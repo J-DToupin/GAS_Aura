@@ -255,6 +255,9 @@ public:
 
 private:
 	void ShowFloatingText(const FEffectProperties& Props, float LocalIncomingDamage);
+	void ApplyDebuff(const FEffectProperties& Props);
+	void HandleIncomingDamage(const FEffectProperties& Props);
+	void HandleIncomingXp(FEffectProperties Props);
 
 	FEffectProperties SetEffectProperties(const FGameplayEffectModCallbackData& Data);
 
